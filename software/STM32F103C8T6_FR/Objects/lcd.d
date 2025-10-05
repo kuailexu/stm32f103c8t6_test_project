@@ -1,0 +1,16 @@
+..\objects\lcd.o: ..\HARDWARE\LCD\lcd.c
+..\objects\lcd.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\objects\lcd.o: ..\HARDWARE\LCD\lcd.h
+..\objects\lcd.o: ..\SYSTEM\sys\sys.h
+..\objects\lcd.o: D:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include\stm32f10x.h
+..\objects\lcd.o: ..\CORE\core_cm3.h
+..\objects\lcd.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\objects\lcd.o: ..\CORE\cmsis_version.h
+..\objects\lcd.o: ..\CORE\cmsis_compiler.h
+..\objects\lcd.o: ..\CORE\cmsis_armcc.h
+..\objects\lcd.o: D:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include\system_stm32f10x.h
+..\objects\lcd.o: ..\HARDWARE\LCD\lcdfont.h
+..\objects\lcd.o: ..\SYSTEM\usart\usart.h
+..\objects\lcd.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\objects\lcd.o: ..\HARDWARE\LCD\lcd_ex.c
+..\objects\lcd.o: ..\SYSTEM\delay\delay.h

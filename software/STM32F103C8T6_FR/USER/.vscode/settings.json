@@ -1,0 +1,30 @@
+{
+    "files.associations": {
+        "mem_mgr.h": "c",
+        "adc.h": "c",
+        "sys.h": "c",
+        "led.h": "c",
+        "freertos_demo.h": "c",
+        "delay.h": "c",
+        "gui.h": "c",
+        "lcd_driver.h": "c",
+        "gtim.h": "c",
+        "stm32f1xx_hal.h": "c",
+        "stm32f1xx_hal_conf.h": "c",
+        "freertos.h": "c",
+        "task.h": "c",
+        "key.h": "c",
+        "common.h": "c",
+        "cstdint": "c",
+        "qdtft_demo.h": "c",
+        "picture.h": "c",
+        "usart.h": "c",
+        "random": "c",
+        "esp01_driver.h": "c",
+        "string": "c",
+        "array": "c",
+        "string_view": "c",
+        "ranges": "c",
+        "span": "c"
+    }
+}
