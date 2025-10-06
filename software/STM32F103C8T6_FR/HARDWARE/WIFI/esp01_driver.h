@@ -4,18 +4,23 @@
 #include "common.h"
 #include "sys.h"
 #include "usart.h"
+// 公共MQTT服务器（免费测试用）
+#define MQTT_SERVER      "broker.emqx.io"
+#define MQTT_PORT        1883
+#define MQTT_PRODUCT_ID  ""
+#define MQTT_DEVICE_NAME "ESP8266_Test"
+#define MQTT_PASSWORD    ""
+// /* OneNET平台配置 */
+// #define ONENET_SERVER        "183.230.40.39"     /* OneNET服务器地址 */
+// #define ONENET_PORT          6002                /* MQTT TCP端口 */
+// #define ONENET_DEVICE_ID     "your_device_id"    /* 设备ID */
+// #define ONENET_PRODUCT_ID    "your_product_id"   /* 产品ID */
+// #define ONENET_ACCESS_KEY    "your_access_key"   /* 设备密钥 */
 
-/* OneNET平台配置 */
-#define ONENET_SERVER        "183.230.40.39"     /* OneNET服务器地址 */
-#define ONENET_PORT          6002                /* MQTT TCP端口 */
-#define ONENET_DEVICE_ID     "your_device_id"    /* 设备ID */
-#define ONENET_PRODUCT_ID    "your_product_id"   /* 产品ID */
-#define ONENET_ACCESS_KEY    "your_access_key"   /* 设备密钥 */
-
-/* MQTT主题定义 */
-#define TOPIC_DEVICE_PROPERTY "$sys/product_id/device_id/thing/property/post"  /* 属性上报 */
-#define TOPIC_DEVICE_EVENT    "$sys/product_id/device_id/thing/event/post"     /* 事件上报 */
-#define TOPIC_COMMAND         "$sys/product_id/device_id/thing/command/+"      /* 命令接收 */
+// /* MQTT主题定义 */
+// #define TOPIC_DEVICE_PROPERTY "$sys/product_id/device_id/thing/property/post"  /* 属性上报 */
+// #define TOPIC_DEVICE_EVENT    "$sys/product_id/device_id/thing/event/post"     /* 事件上报 */
+// #define TOPIC_COMMAND         "$sys/product_id/device_id/thing/command/+"      /* 命令接收 */
 
 /* 数据流名称 */
 #define DATASTREAM_TEMP       "temperature"

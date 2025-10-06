@@ -17,7 +17,7 @@ bool ESP8266_Init(ESP8266_Device_t *dev, UART_HandleTypeDef *huart, bool debug)
         printf("ESP8266初始化开始...\r\n");
     }
     /* 设置模式 */
-    if (!ESP8266_SendCommand(dev, "CWMODE=1", "OK", 3000))
+    if (!ESP8266_SendCommand(dev, "CWMODE=1", "OK", 5000))
     {
         if (debug)
         {
@@ -35,10 +35,6 @@ bool ESP8266_Init(ESP8266_Device_t *dev, UART_HandleTypeDef *huart, bool debug)
 //    }
 //    
     dev->state = ESP8266_STATE_READY;
-    if (debug)
-    {
-        printf("ESP8266初始化成功\r\n");
-    }
     return true;
 }
 
@@ -74,13 +70,97 @@ bool ESP8266_ConnectWiFi(ESP8266_Device_t *dev, const char *ssid, const char *pa
     }
     return false;
 }
+/**
+ * @brief 构建MQTT CONNECT报文
+ */
+uint16_t Build_MQTT_Connect_Packet(char *buffer, const char *client_id,
+    const char *username, const char *password)
+{
+    uint8_t *ptr = (uint8_t *)buffer;
 
+    /* === 固定头 Fixed Header === */
+    // CONNECT报文类型 (0x10)
+    *ptr++ = 0x10;
+
+    // 剩余长度位置 (稍后回填)
+    uint8_t *remaining_len_ptr = ptr;
+    ptr++;
+
+    /* === 可变头 Variable Header === */
+    // 协议名长度 (MSB + LSB)
+    *ptr++ = 0x00;
+    *ptr++ = 0x04;
+
+    // 协议名 "MQTT"
+    *ptr++ = 'M';
+    *ptr++ = 'Q';
+    *ptr++ = 'T';
+    *ptr++ = 'T';
+
+    // 协议级别 MQTT 3.1.1
+    *ptr++ = 0x04;
+
+    // 连接标志 Connect Flags
+    uint8_t connect_flags = 0x02; // Clean Session = 1
+
+    // 如果有用户名密码
+    if (username != NULL && strlen(username) > 0)
+    {
+        connect_flags |= 0x80; // User Name Flag = 1
+    }
+    if (password != NULL && strlen(password) > 0)
+    {
+        connect_flags |= 0x40; // Password Flag = 1
+    }
+
+    *ptr++ = connect_flags;
+
+    // 保持连接时间 Keep Alive (60秒)
+    *ptr++ = 0x00;
+    *ptr++ = 0x3C;
+
+    /* === 有效载荷 Payload === */
+    // 客户端ID Client Identifier
+    uint16_t client_id_len = strlen(client_id);
+    *ptr++ = (client_id_len >> 8) & 0xFF; // 长度高位
+    *ptr++ = client_id_len & 0xFF;        // 长度低位
+    memcpy(ptr, client_id, client_id_len);
+    ptr += client_id_len;
+
+    // 用户名 User Name (OneNET格式: 产品ID$设备名称)
+    if (connect_flags & 0x80)
+    {
+        uint16_t username_len = strlen(username);
+        *ptr++ = (username_len >> 8) & 0xFF;
+        *ptr++ = username_len & 0xFF;
+        memcpy(ptr, username, username_len);
+        ptr += username_len;
+    }
+
+    // 密码 Password (OneNET格式: 鉴权信息或token)
+    if (connect_flags & 0x40)
+    {
+        uint16_t password_len = strlen(password);
+        *ptr++ = (password_len >> 8) & 0xFF;
+        *ptr++ = password_len & 0xFF;
+        memcpy(ptr, password, password_len);
+        ptr += password_len;
+    }
+
+    /* === 计算并回填剩余长度 === */
+    uint16_t remaining_len = (ptr - (uint8_t *)buffer) - 2; // 减去固定头的2字节
+    *remaining_len_ptr = remaining_len;
+
+    return ptr - (uint8_t *)buffer;
+}
 /**
  * @brief 连接MQTT服务器
  */
 bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev)
 {
     char cmd[256];
+    char mqtt_connect[512];
+
     if (dev == NULL) return false;
     if (dev->state != ESP8266_STATE_WIFI_CONNECTED)
     {
@@ -90,8 +170,9 @@ bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev)
         }
         return false;
     }
+
     /* 建立TCP连接 */
-    snprintf(cmd, sizeof(cmd), "CIPSTART=\"TCP\",\"%s\",%d", ONENET_SERVER, ONENET_PORT);
+    snprintf(cmd, sizeof(cmd), "AT+CIPSTART=\"TCP\",\"%s\",%d", MQTT_SERVER, MQTT_PORT);
     if (!ESP8266_SendCommand(dev, cmd, "CONNECT", 10000))
     {
         if (dev->debug)
@@ -100,23 +181,86 @@ bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev)
         }
         return false;
     }
+    HAL_Delay(2000);
 
-    /* 准备MQTT连接报文 */
-    char mqtt_connect[512];
-    /* 这里需要构建实际的MQTT CONNECT报文 */
-    /* 简化版本，实际使用时需要按照OneNET的MQTT协议构建 */
+    /* 构建MQTT CONNECT报文 */
+    // OneNET MQTT连接参数
+    char client_id[64];
+    char username[64];
+    char password[64];
 
-    /* 发送MQTT连接 */
-    snprintf(cmd, sizeof(cmd), "CIPSEND=%d", strlen(mqtt_connect));
-    if (!ESP8266_SendCommand(dev, cmd, ">", 3000))
+    // 构建客户端ID (设备名称)
+    snprintf(client_id, sizeof(client_id), "%s", MQTT_DEVICE_NAME);
+
+    // 构建用户名 (产品ID$设备名称)
+    snprintf(username, sizeof(username), "%s$%s", MQTT_PRODUCT_ID, MQTT_DEVICE_NAME);
+
+    // 密码 (鉴权信息或token)
+    snprintf(password, sizeof(password), "%s", MQTT_PASSWORD);
+
+    // 构建MQTT CONNECT包
+    uint16_t packet_len = Build_MQTT_Connect_Packet(mqtt_connect, client_id, username, password);
+
+    if (dev->debug)
     {
-        return false;
+        printf("MQTT CONNECT包长度: %d\r\n", packet_len);
+        printf("包内容(HEX): ");
+        for (int i = 0; i < packet_len; i++)
+        {
+            printf("%02X ", (uint8_t)mqtt_connect[i]);
+        }
+        printf("\r\n");
     }
 
+    /* 发送MQTT连接 */
+    snprintf(cmd, sizeof(cmd), "AT+CIPSEND=%d", packet_len);
+    if (!ESP8266_SendCommand(dev, cmd, ">", 3000))
+    {
+        if (dev->debug)
+        {
+            printf("发送长度设置失败\r\n");
+        }
+        return false;
+    }
+    HAL_Delay(500);
+
     /* 发送MQTT连接数据 */
-    HAL_UART_Transmit(dev->huart, (uint8_t *)mqtt_connect, strlen(mqtt_connect), 5000);
-    /* 等待连接响应 */
-    if (ESP8266_WaitForResponse(dev, "CONNACK", 5000))
+    HAL_UART_Transmit(dev->huart, (uint8_t *)mqtt_connect, packet_len, 5000);
+    HAL_Delay(2000);
+
+    /* 等待连接响应 CONNACK (0x20) */
+    // CONNACK响应格式: 0x20 0x02 0x00 0x00 (成功)
+    char response[64];
+    uint32_t start_time = HAL_GetTick();
+    bool connack_received = false;
+
+    while ((HAL_GetTick() - start_time) < 5000)
+    {
+        if (g_usart3_idle_flag)
+        {
+            if (dev->debug)
+            {
+                uint16_t len = g_usart3_rx_len;  /* 得到此次接收到的数据长度 */
+                if (len > 0)
+                {
+                    memcpy(response, g_usart3_rx_buf, len < sizeof(response) - 1 ? len : sizeof(response) - 1);
+                    printf("\r\n收到响应: %.*s\r\n", response);
+                }
+                usart3_restart_receive();                      /* 清除接收状态 */
+            }
+            // 检查CONNACK响应 (0x20 0x02 0x00 0x00)
+            if (strlen(response) >= 4 &&
+                (uint8_t)response[0] == 0x20 &&
+                (uint8_t)response[1] == 0x02 &&
+                (uint8_t)response[3] == 0x00) // 连接确认标志
+            {
+                connack_received = true;
+                break;
+            }
+        }
+    }
+
+    if (connack_received)
     {
         dev->state = ESP8266_STATE_MQTT_CONNECTED;
         dev->last_heartbeat = HAL_GetTick();
@@ -126,9 +270,10 @@ bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev)
         }
         return true;
     }
+
     if (dev->debug)
     {
-        printf("MQTT连接失败\r\n");
+        printf("MQTT连接失败，未收到CONNACK\r\n");
     }
     return false;
 }
@@ -248,7 +393,7 @@ bool ESP8266_SendCommand(ESP8266_Device_t *dev, const char *cmd, const char *exp
     if (dev == NULL || cmd == NULL) return false;
 
     /* 清空接收缓冲区 */
-//    memset(dev->response_buffer, 0, sizeof(dev->response_buffer));
+    memset(dev->response_buffer, 0, sizeof(dev->response_buffer));
 
     /*正确的AT命令格式 */
     if (strncmp(cmd, "AT", 2) == 0)
@@ -280,34 +425,40 @@ bool ESP8266_WaitForResponse(ESP8266_Device_t *dev, const char *expected, uint32
 
     while ((HAL_GetTick() - start_time) < timeout)
     {
-        /* 检查是否收到预期响应 */
-        if (strstr(dev->response_buffer, expected) != NULL)
+        if (g_usart3_idle_flag)
         {
-            if (dev->debug)
+            memcpy(dev->response_buffer, g_usart3_rx_buf, sizeof(dev->response_buffer) - 1);
+            /* 检查是否收到预期响应 */
+            if (strstr(dev->response_buffer, expected) != NULL)
             {
-                printf("收到预期响应: %s\r\n", expected);
+                if (dev->debug)
+                {
+                    printf("收到预期响应: %s\r\n", expected);
+                }
+                return true;
             }
-            return true;
-        }
 
-        /* 检查是否出错 */
-        if (strstr(dev->response_buffer, "ERROR") != NULL)
-        {
-            if (dev->debug)
+            /* 检查是否出错 */
+            if (strstr(dev->response_buffer, "ERROR") != NULL)
             {
-                printf("收到错误响应\r\n");
+                if (dev->debug)
+                {
+                    printf("收到错误响应\r\n");
+                }
+                return false;
             }
-            return false;
-        }
+            usart3_restart_receive();                      /* 清除接收状态 */
 
+        }
         HAL_Delay(10);
+
     }
 
     if (dev->debug)
     {
         printf("等待响应超时\r\n");
     }
-    //		memset(dev->response_buffer, 0, sizeof(dev->response_buffer));
+    memset(dev->response_buffer, 0, sizeof(dev->response_buffer));
     return false;
 }
 

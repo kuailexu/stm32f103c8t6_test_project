@@ -59,9 +59,8 @@ int main(void)
         {
             uint16_t len = g_usart1_rx_sta & 0x3FFF;  /* 得到此次接收到的数据长度 */
             printf("\r\n收到串口1数据: %.*s\r\n", len, g_usart1_rx_buf);
-            uint16_t copy_len = (USART1_REC_LEN < 512) ? USART1_REC_LEN : 512;
-            memcpy(esp8266.response_buffer, g_usart1_rx_buf, copy_len);
-            ESP8266_SendCommand(&esp8266, (const char *)esp8266.response_buffer, "OK", 3000);
+            // memcpy(esp8266.response_buffer, g_usart1_rx_buf, copy_len);
+            ESP8266_SendCommand(&esp8266, (const char *)g_usart1_rx_buf, "OK", 3000);
             memset(g_usart1_rx_buf, 0, sizeof(g_usart1_rx_buf));
             g_usart1_rx_sta = 0;                      /* 清除接收状态 */
         }
