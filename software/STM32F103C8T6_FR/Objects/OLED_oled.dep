@@ -1,5 +1,5 @@
 Dependencies for Project 'OLED', Target 'oled': (DO NOT MODIFY !)
-F (.\main.c)(0x68E3A327)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\FREERTOS\portable\RVDS\ARM_CM3 -I ..\FREERTOS\include -I ..\USER -I ..\FWLIB\Inc -I ..\SYSTEM\usart -I ..\SYSTEM\sys -I ..\SYSTEM\memory -I ..\SYSTEM\delay -I ..\HARDWARE\LCD -I ..\HARDWARE\LED -I ..\HARDWARE\OLED -I ..\HARDWARE\1.8tft -I ..\HARDWARE\ADC -I ..\HARDWARE\KEY -I ..\HARDWARE\TIMER -I ..\HARDWARE\WIFI-IF:\project\project\新工程\简易示波器\software\STM32F103C8T6_FR\USER\RTE\_oled-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="522" -DSTM32F10X_MD -DUSE_HAL_DRIVER -DSTM32F103xB-o ..\objects\main.o --omf_browse ..\objects\main.crf --depend ..\objects\main.d)
+F (.\main.c)(0x68E4EE14)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\FREERTOS\portable\RVDS\ARM_CM3 -I ..\FREERTOS\include -I ..\USER -I ..\FWLIB\Inc -I ..\SYSTEM\usart -I ..\SYSTEM\sys -I ..\SYSTEM\memory -I ..\SYSTEM\delay -I ..\HARDWARE\LCD -I ..\HARDWARE\LED -I ..\HARDWARE\OLED -I ..\HARDWARE\1.8tft -I ..\HARDWARE\ADC -I ..\HARDWARE\KEY -I ..\HARDWARE\TIMER -I ..\HARDWARE\WIFI-IF:\project\project\新工程\简易示波器\software\STM32F103C8T6_FR\USER\RTE\_oled-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="522" -DSTM32F10X_MD -DUSE_HAL_DRIVER -DSTM32F103xB-o ..\objects\main.o --omf_browse ..\objects\main.crf --depend ..\objects\main.d)
 I (..\SYSTEM\sys\sys.h)(0x688116E0)
 I (..\FWLIB\Inc\stm32f1xx_hal.h)(0x5D10A068)
 I (..\FWLIB\Inc\stm32f1xx_hal_conf.h)(0x689E016F)
@@ -78,7 +78,7 @@ I (..\HARDWARE\1.8tft\GUI.h)(0x68DCAEB3)
 I (..\HARDWARE\ADC\adc.h)(0x68B167B3)
 I (..\HARDWARE\KEY\key.h)(0x68987995)
 I (..\HARDWARE\TIMER\gtim.h)(0x68B167BB)
-I (..\HARDWARE\WIFI\esp01_driver.h)(0x68E34E8F)
+I (..\HARDWARE\WIFI\esp01_driver.h)(0x68E4F31C)
 F (.\freertos_demo.c)(0x68DCAE6A)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\FREERTOS\portable\RVDS\ARM_CM3 -I ..\FREERTOS\include -I ..\USER -I ..\FWLIB\Inc -I ..\SYSTEM\usart -I ..\SYSTEM\sys -I ..\SYSTEM\memory -I ..\SYSTEM\delay -I ..\HARDWARE\LCD -I ..\HARDWARE\LED -I ..\HARDWARE\OLED -I ..\HARDWARE\1.8tft -I ..\HARDWARE\ADC -I ..\HARDWARE\KEY -I ..\HARDWARE\TIMER -I ..\HARDWARE\WIFI-IF:\project\project\新工程\简易示波器\software\STM32F103C8T6_FR\USER\RTE\_oled-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="522" -DSTM32F10X_MD -DUSE_HAL_DRIVER -DSTM32F103xB-o ..\objects\freertos_demo.o --omf_browse ..\objects\freertos_demo.crf --depend ..\objects\freertos_demo.d)
 I (freertos_demo.h)(0x68982EC7)
 I (..\FREERTOS\include\FreeRTOS.h)(0x67E51FD6)
@@ -1617,7 +1617,7 @@ I (..\FWLIB\Inc\stm32f1xx_ll_usb.h)(0x5D138990)
 I (..\FWLIB\Inc\stm32f1xx_hal_pcd_ex.h)(0x5D10A085)
 I (..\FWLIB\Inc\stm32f1xx_hal_hcd.h)(0x5D10A085)
 I (..\FWLIB\Inc\stm32f1xx_hal_mmc.h)(0x5D10A077)
-F (..\SYSTEM\usart\usart.c)(0x68E25722)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\FREERTOS\portable\RVDS\ARM_CM3 -I ..\FREERTOS\include -I ..\USER -I ..\FWLIB\Inc -I ..\SYSTEM\usart -I ..\SYSTEM\sys -I ..\SYSTEM\memory -I ..\SYSTEM\delay -I ..\HARDWARE\LCD -I ..\HARDWARE\LED -I ..\HARDWARE\OLED -I ..\HARDWARE\1.8tft -I ..\HARDWARE\ADC -I ..\HARDWARE\KEY -I ..\HARDWARE\TIMER -I ..\HARDWARE\WIFI-IF:\project\project\新工程\简易示波器\software\STM32F103C8T6_FR\USER\RTE\_oled-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="522" -DSTM32F10X_MD -DUSE_HAL_DRIVER -DSTM32F103xB-o ..\objects\usart.o --omf_browse ..\objects\usart.crf --depend ..\objects\usart.d)
+F (..\SYSTEM\usart\usart.c)(0x68E4F139)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\FREERTOS\portable\RVDS\ARM_CM3 -I ..\FREERTOS\include -I ..\USER -I ..\FWLIB\Inc -I ..\SYSTEM\usart -I ..\SYSTEM\sys -I ..\SYSTEM\memory -I ..\SYSTEM\delay -I ..\HARDWARE\LCD -I ..\HARDWARE\LED -I ..\HARDWARE\OLED -I ..\HARDWARE\1.8tft -I ..\HARDWARE\ADC -I ..\HARDWARE\KEY -I ..\HARDWARE\TIMER -I ..\HARDWARE\WIFI-IF:\project\project\新工程\简易示波器\software\STM32F103C8T6_FR\USER\RTE\_oled-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="522" -DSTM32F10X_MD -DUSE_HAL_DRIVER -DSTM32F103xB-o ..\objects\usart.o --omf_browse ..\objects\usart.crf --depend ..\objects\usart.d)
 I (..\SYSTEM\sys\sys.h)(0x688116E0)
 I (..\FWLIB\Inc\stm32f1xx_hal.h)(0x5D10A068)
 I (..\FWLIB\Inc\stm32f1xx_hal_conf.h)(0x689E016F)
@@ -1674,7 +1674,7 @@ I (..\FWLIB\Inc\stm32f1xx_hal_hcd.h)(0x5D10A085)
 I (..\FWLIB\Inc\stm32f1xx_hal_mmc.h)(0x5D10A077)
 I (..\SYSTEM\usart\usart.h)(0x68E25727)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
-I (..\HARDWARE\WIFI\esp01_driver.h)(0x68E34E8F)
+I (..\HARDWARE\WIFI\esp01_driver.h)(0x68E4F31C)
 I (..\USER\common.h)(0x6888E4E9)
 I (D:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x57F606B8)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
@@ -2301,8 +2301,8 @@ I (..\FREERTOS\portable\RVDS\ARM_CM3\portmacro.h)(0x67E51FD6)
 I (..\FREERTOS\include\mpu_wrappers.h)(0x67E51FD6)
 I (..\FREERTOS\include\task.h)(0x67E51FD6)
 I (..\FREERTOS\include\list.h)(0x67E51FD6)
-F (..\HARDWARE\WIFI\esp01_driver.c)(0x68E3A32F)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\FREERTOS\portable\RVDS\ARM_CM3 -I ..\FREERTOS\include -I ..\USER -I ..\FWLIB\Inc -I ..\SYSTEM\usart -I ..\SYSTEM\sys -I ..\SYSTEM\memory -I ..\SYSTEM\delay -I ..\HARDWARE\LCD -I ..\HARDWARE\LED -I ..\HARDWARE\OLED -I ..\HARDWARE\1.8tft -I ..\HARDWARE\ADC -I ..\HARDWARE\KEY -I ..\HARDWARE\TIMER -I ..\HARDWARE\WIFI-IF:\project\project\新工程\简易示波器\software\STM32F103C8T6_FR\USER\RTE\_oled-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="522" -DSTM32F10X_MD -DUSE_HAL_DRIVER -DSTM32F103xB-o ..\objects\esp01_driver.o --omf_browse ..\objects\esp01_driver.crf --depend ..\objects\esp01_driver.d)
-I (..\HARDWARE\WIFI\esp01_driver.h)(0x68E34E8F)
+F (..\HARDWARE\WIFI\esp01_driver.c)(0x68E4F3F4)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\FREERTOS\portable\RVDS\ARM_CM3 -I ..\FREERTOS\include -I ..\USER -I ..\FWLIB\Inc -I ..\SYSTEM\usart -I ..\SYSTEM\sys -I ..\SYSTEM\memory -I ..\SYSTEM\delay -I ..\HARDWARE\LCD -I ..\HARDWARE\LED -I ..\HARDWARE\OLED -I ..\HARDWARE\1.8tft -I ..\HARDWARE\ADC -I ..\HARDWARE\KEY -I ..\HARDWARE\TIMER -I ..\HARDWARE\WIFI-IF:\project\project\新工程\简易示波器\software\STM32F103C8T6_FR\USER\RTE\_oled-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="522" -DSTM32F10X_MD -DUSE_HAL_DRIVER -DSTM32F103xB-o ..\objects\esp01_driver.o --omf_browse ..\objects\esp01_driver.crf --depend ..\objects\esp01_driver.d)
+I (..\HARDWARE\WIFI\esp01_driver.h)(0x68E4F31C)
 I (..\USER\common.h)(0x6888E4E9)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x57F606B8)
 I (D:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x57F606B8)

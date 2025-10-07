@@ -179,7 +179,7 @@
           <Type>0</Type>
           <LineNumber>272</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134219062</Address>
+          <Address>134220470</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -193,50 +193,92 @@
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>169</LineNumber>
+          <LineNumber>430</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134222646</Address>
+          <Address>134221736</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>F:\project\project\鏂板伐绋?绠€鏄撶ず娉㈠櫒\software\STM32F103C8T6_FR\HARDWARE\TIMER\gtim.c</Filename>
+          <Filename>F:\project\project\鏂板伐绋?绠€鏄撶ず娉㈠櫒\software\STM32F103C8T6_FR\HARDWARE\WIFI\esp01_driver.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\OLED\../HARDWARE/TIMER/gtim.c\169</Expression>
+          <Expression>\\OLED\../HARDWARE/WIFI/esp01_driver.c\430</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>430</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134221820</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>F:\project\project\鏂板伐绋?绠€鏄撶ず娉㈠櫒\software\STM32F103C8T6_FR\HARDWARE\WIFI\esp01_driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\OLED\../HARDWARE/WIFI/esp01_driver.c\430</Expression>
+        </Bp>
+        <Bp>
+          <Number>3</Number>
+          <Type>0</Type>
+          <LineNumber>69</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134229432</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>F:\project\project\鏂板伐绋?绠€鏄撶ず娉㈠櫒\software\STM32F103C8T6_FR\USER\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\OLED\main.c\69</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>g_timxchy_cap_sta</ItemText>
+          <ItemText>response_buffer</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>g_timxchy_cap_val</ItemText>
+          <ItemText>g_usart3_rx_buffer</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>period</ItemText>
+          <ItemText>dev-&gt;huart</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rise_time</ItemText>
+          <ItemText>dev</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>fall_time</ItemText>
+          <ItemText>full_cmd</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>capture_value</ItemText>
+          <ItemText>response_buffer</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>dev-&gt;response_buffer</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>g_usart3_rx_buf</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
