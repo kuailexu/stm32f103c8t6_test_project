@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\FREERTOS\portable\RVDS\ARM_CM3;..\FREERTOS\include;..\USER;..\FWLIB\Inc;..\SYSTEM\usart;..\SYSTEM\sys;..\SYSTEM\memory;..\SYSTEM\delay;..\HARDWARE\LCD;..\HARDWARE\LED;..\HARDWARE\OLED;..\HARDWARE\1.8tft;..\HARDWARE\ADC;..\HARDWARE\KEY;..\HARDWARE\TIMER</IncludePath>
+              <IncludePath>..\CORE;..\FREERTOS\portable\RVDS\ARM_CM3;..\FREERTOS\include;..\USER;..\FWLIB\Inc;..\SYSTEM\usart;..\SYSTEM\sys;..\SYSTEM\memory;..\SYSTEM\delay;..\HARDWARE\LCD;..\HARDWARE\LED;..\HARDWARE\OLED;..\HARDWARE\1.8tft;..\HARDWARE\ADC;..\HARDWARE\KEY;..\HARDWARE\TIMER;..\HARDWARE\WIFI</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

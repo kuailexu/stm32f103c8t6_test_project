@@ -265,7 +265,7 @@ void USART3_UX_IRQHandler(void)
         g_usart3_rx_len = g_usart3_rx_sta;
         g_usart3_rx_sta |= 0x8000;
 
-        printf("USART3 IDLE中断触发，接收长度: %d\r\n", g_usart3_rx_len);
+//        printf("USART3 IDLE中断触发，接收长度: %d\r\n", g_usart3_rx_len);
 
         /* 这里直接返回，不调用HAL处理，避免HAL库清除我们的标志 */
         return;
@@ -282,6 +282,7 @@ void usart3_restart_receive(void)
     g_usart3_rx_sta = 0;
     g_usart3_idle_flag = 0;
     g_usart3_rx_len = 0;
+    memset(g_usart3_rx_buf, 0, sizeof(g_usart3_rx_buf));
     HAL_UART_Receive_IT(&g_uart3_handle, (uint8_t *)g_usart3_rx_buffer, USART3_RXBUFFERSIZE);
 }
 

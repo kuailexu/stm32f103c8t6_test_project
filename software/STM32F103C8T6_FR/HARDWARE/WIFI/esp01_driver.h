@@ -7,8 +7,8 @@
 // 公共MQTT服务器（免费测试用）
 #define MQTT_SERVER      "broker.emqx.io"
 #define MQTT_PORT        1883
-#define MQTT_PRODUCT_ID  ""
-#define MQTT_DEVICE_NAME "ESP8266_Test"
+#define MQTT_CLIENT_ID   "rj"
+#define MQTT_NAME        ""
 #define MQTT_PASSWORD    ""
 // /* OneNET平台配置 */
 // #define ONENET_SERVER        "183.230.40.39"     /* OneNET服务器地址 */
@@ -60,6 +60,7 @@ bool ESP8266_Init(ESP8266_Device_t *dev, UART_HandleTypeDef *huart, bool debug);
 bool ESP8266_Reset(ESP8266_Device_t *dev);
 bool ESP8266_ConnectWiFi(ESP8266_Device_t *dev, const char *ssid, const char *password);
 bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev);
+uint16_t Parse_IPD_Response(const char *response, char *mqtt_data);
 bool ESP8266_PublishData(ESP8266_Device_t *dev, const char *datastream, float value);
 bool ESP8266_PublishMultiData(ESP8266_Device_t *dev, float temp, float humid, int status);
 bool ESP8266_WaitForResponse(ESP8266_Device_t *dev, const char *expected, uint32_t timeout);

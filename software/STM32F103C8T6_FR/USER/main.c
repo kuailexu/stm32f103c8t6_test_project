@@ -32,15 +32,17 @@ int main(void)
     if (ESP8266_Init(&esp8266, &g_uart3_handle, true))
     {
         printf("ESP8266初始化成功\r\n");
+        HAL_Delay(1000);
         /* 连接WiFi */
         if (ESP8266_ConnectWiFi(&esp8266, WIFI_SSID, WIFI_PASSWORD))
         {
             printf("WiFi连接成功\r\n");
-            /* 连接MQTT */
-            if (ESP8266_ConnectMQTT(&esp8266))
-            {
-                printf("MQTT连接成功，准备上传数据...\r\n");
-            }
+            HAL_Delay(1000);
+            //     /* 连接MQTT */
+            //     if (ESP8266_ConnectMQTT(&esp8266))
+            //     {
+            //         printf("MQTT连接成功，准备上传数据...\r\n");
+            //     }
         }
     }
     // led_init();
@@ -59,8 +61,18 @@ int main(void)
         {
             uint16_t len = g_usart1_rx_sta & 0x3FFF;  /* 得到此次接收到的数据长度 */
             printf("\r\n收到串口1数据: %.*s\r\n", len, g_usart1_rx_buf);
-            // memcpy(esp8266.response_buffer, g_usart1_rx_buf, copy_len);
-            ESP8266_SendCommand(&esp8266, (const char *)g_usart1_rx_buf, "OK", 3000);
+            if (strstr((const char *)g_usart1_rx_buf, "MQTT") != NULL)
+            {
+                ESP8266_ConnectMQTT(&esp8266);
+            }
+            else if (esp8266.state == ESP8266_STATE_MQTT_CONNECTED)
+            {
+                /* code */
+            }
+            else if (esp8266.state == ESP8266_STATE_READY)
+            {
+                ESP8266_SendCommand(&esp8266, (const char *)g_usart1_rx_buf, "OK", 3000);
+            }
             memset(g_usart1_rx_buf, 0, sizeof(g_usart1_rx_buf));
             g_usart1_rx_sta = 0;                      /* 清除接收状态 */
         }

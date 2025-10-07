@@ -19,12 +19,12 @@
                 "f:\\project\\project\\新工程\\简易示波器\\software\\STM32F103C8T6_FR\\HARDWARE\\ADC",
                 "f:\\project\\project\\新工程\\简易示波器\\software\\STM32F103C8T6_FR\\HARDWARE\\KEY",
                 "f:\\project\\project\\新工程\\简易示波器\\software\\STM32F103C8T6_FR\\HARDWARE\\TIMER",
+                "f:\\project\\project\\新工程\\简易示波器\\software\\STM32F103C8T6_FR\\HARDWARE\\WIFI",
                 "D:\\Keil_v5\\ARM\\ARMCC\\include",
                 "D:\\Keil_v5\\ARM\\ARMCC\\include\\rw",
                 "f:\\project\\project\\新工程\\简易示波器\\software\\STM32F103C8T6_FR\\FREERTOS\\portable\\MemMang",
                 "f:\\project\\project\\新工程\\简易示波器\\software\\STM32F103C8T6_FR\\FREERTOS",
-                "f:\\project\\project\\新工程\\简易示波器\\software\\STM32F103C8T6_FR\\FWLIB\\Src",
-                "f:\\project\\project\\新工程\\简易示波器\\software\\STM32F103C8T6_FR\\HARDWARE\\WIFI"
+                "f:\\project\\project\\新工程\\简易示波器\\software\\STM32F103C8T6_FR\\FWLIB\\Src"
             ],
             "defines": [
                 "USE_HAL_DRIVER",

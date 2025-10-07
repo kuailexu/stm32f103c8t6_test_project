@@ -17,7 +17,7 @@ bool ESP8266_Init(ESP8266_Device_t *dev, UART_HandleTypeDef *huart, bool debug)
         printf("ESP8266初始化开始...\r\n");
     }
     /* 设置模式 */
-    if (!ESP8266_SendCommand(dev, "CWMODE=1", "OK", 5000))
+    if (!ESP8266_SendCommand(dev, "AT+CWMODE=1", "OK", 5000))
     {
         if (debug)
         {
@@ -53,7 +53,7 @@ bool ESP8266_ConnectWiFi(ESP8266_Device_t *dev, const char *ssid, const char *pa
 {
     char cmd[128];
     if (dev == NULL || ssid == NULL || password == NULL) return false;
-    snprintf(cmd, sizeof(cmd), "CWJAP=\"%s\",\"%s\"", ssid, password);
+    snprintf(cmd, sizeof(cmd), "AT+CWJAP=\"%s\",\"%s\"", ssid, password);
     if (ESP8266_SendCommand(dev, cmd, "WIFI GOT IP", 15000))
     {
         dev->state = ESP8266_STATE_WIFI_CONNECTED;
@@ -162,18 +162,18 @@ bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev)
     char mqtt_connect[512];
 
     if (dev == NULL) return false;
-    if (dev->state != ESP8266_STATE_WIFI_CONNECTED)
-    {
-        if (dev->debug)
-        {
-            printf("错误: 请先连接WiFi\r\n");
-        }
-        return false;
-    }
+    // if (dev->state != ESP8266_STATE_WIFI_CONNECTED)
+    // {
+    //     if (dev->debug)
+    //     {
+    //         printf("错误: 请先连接WiFi\r\n");
+    //     }
+    //     return false;
+    // }
 
     /* 建立TCP连接 */
     snprintf(cmd, sizeof(cmd), "AT+CIPSTART=\"TCP\",\"%s\",%d", MQTT_SERVER, MQTT_PORT);
-    if (!ESP8266_SendCommand(dev, cmd, "CONNECT", 10000))
+    if (!ESP8266_SendCommand(dev, cmd, "CONNECT", 5000))
     {
         if (dev->debug)
         {
@@ -190,10 +190,10 @@ bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev)
     char password[64];
 
     // 构建客户端ID (设备名称)
-    snprintf(client_id, sizeof(client_id), "%s", MQTT_DEVICE_NAME);
+    snprintf(client_id, sizeof(client_id), "%s", MQTT_CLIENT_ID);
 
     // 构建用户名 (产品ID$设备名称)
-    snprintf(username, sizeof(username), "%s$%s", MQTT_PRODUCT_ID, MQTT_DEVICE_NAME);
+    snprintf(username, sizeof(username), "%s", MQTT_NAME);
 
     // 密码 (鉴权信息或token)
     snprintf(password, sizeof(password), "%s", MQTT_PASSWORD);
@@ -233,7 +233,7 @@ bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev)
     char response[64];
     uint32_t start_time = HAL_GetTick();
     bool connack_received = false;
-
+    char mqtt_data[32];
     while ((HAL_GetTick() - start_time) < 5000)
     {
         if (g_usart3_idle_flag)
@@ -243,16 +243,22 @@ bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev)
                 uint16_t len = g_usart3_rx_len;  /* 得到此次接收到的数据长度 */
                 if (len > 0)
                 {
-                    memcpy(response, g_usart3_rx_buf, len < sizeof(response) - 1 ? len : sizeof(response) - 1);
-                    printf("\r\n收到响应: %.*s\r\n", response);
+                    memcpy(response, g_usart3_rx_buf, len);
+                    uint16_t mqtt_len = Parse_IPD_Response(response, mqtt_data);
+                    printf("收到响应: ");
+                    for (int i = 0; i < mqtt_len; i++)
+                    {
+                        printf("%02X ", (uint8_t)mqtt_data[i]);
+                    }
+                    printf("\r\n");
                 }
                 usart3_restart_receive();                      /* 清除接收状态 */
             }
+
             // 检查CONNACK响应 (0x20 0x02 0x00 0x00)
-            if (strlen(response) >= 4 &&
-                (uint8_t)response[0] == 0x20 &&
-                (uint8_t)response[1] == 0x02 &&
-                (uint8_t)response[3] == 0x00) // 连接确认标志
+            if ((uint8_t)mqtt_data[0] == 0x20 &&
+                (uint8_t)mqtt_data[1] == 0x02 &&
+                (uint8_t)mqtt_data[3] == 0x00) // 连接确认标志
             {
                 connack_received = true;
                 break;
@@ -277,7 +283,50 @@ bool ESP8266_ConnectMQTT(ESP8266_Device_t *dev)
     }
     return false;
 }
+/**
+ * @brief 解析IPD数据并提取MQTT响应
+ * @param response 原始响应数据
+ * @param mqtt_data 输出的MQTT数据缓冲区
+ * @return MQTT数据长度，0表示没有有效数据
+ */
+uint16_t Parse_IPD_Response(const char *response, char *mqtt_data)
+{
+    // 查找IPD前缀
+    char *ipd_start = strstr(response, "+IPD,");
+    if (ipd_start == NULL)
+    {
+        return 0; // 没有IPD数据
+    }
 
+    // 跳过"+IPD," (5个字符)
+    ipd_start += 5;
+
+    // 解析数据长度
+    uint16_t data_len = 0;
+    while (*ipd_start >= '0' && *ipd_start <= '9')
+    {
+        data_len = data_len * 10 + (*ipd_start - '0');
+        ipd_start++;
+    }
+
+    // 找到冒号分隔符
+    if (*ipd_start != ':')
+    {
+        return 0; // 格式错误
+    }
+
+    // 跳过冒号
+    ipd_start++;
+
+    // 复制MQTT数据
+    if (data_len > 0)
+    {
+        memcpy(mqtt_data, ipd_start, data_len);
+        return data_len;
+    }
+
+    return 0;
+}
 /**
  * @brief 发布传感器数据
  */
@@ -398,15 +447,13 @@ bool ESP8266_SendCommand(ESP8266_Device_t *dev, const char *cmd, const char *exp
     /*正确的AT命令格式 */
     if (strncmp(cmd, "AT", 2) == 0)
     {
-        // 如果命令本身以AT开头，直接使用
         snprintf(full_cmd, sizeof(full_cmd), "%s\r\n", cmd);
     }
     else
     {
-        // 否则添加AT+前缀
-        snprintf(full_cmd, sizeof(full_cmd), "AT+%s\r\n", cmd);
+        snprintf(full_cmd, sizeof(full_cmd), "%s\r\n", cmd);
     }
-    HAL_UART_Transmit(dev->huart, (uint8_t *)full_cmd, strlen(full_cmd), 2000);
+    HAL_UART_Transmit(dev->huart, (uint8_t *)full_cmd, strlen(full_cmd), timeout);
     if (dev->debug)
     {
         printf("发送: %s\r\n", full_cmd);
@@ -428,6 +475,7 @@ bool ESP8266_WaitForResponse(ESP8266_Device_t *dev, const char *expected, uint32
         if (g_usart3_idle_flag)
         {
             memcpy(dev->response_buffer, g_usart3_rx_buf, sizeof(dev->response_buffer) - 1);
+            usart3_restart_receive();
             /* 检查是否收到预期响应 */
             if (strstr(dev->response_buffer, expected) != NULL)
             {
@@ -437,7 +485,6 @@ bool ESP8266_WaitForResponse(ESP8266_Device_t *dev, const char *expected, uint32
                 }
                 return true;
             }
-
             /* 检查是否出错 */
             if (strstr(dev->response_buffer, "ERROR") != NULL)
             {
@@ -447,8 +494,7 @@ bool ESP8266_WaitForResponse(ESP8266_Device_t *dev, const char *expected, uint32
                 }
                 return false;
             }
-            usart3_restart_receive();                      /* 清除接收状态 */
-
+            /* 清除接收状态 */
         }
         HAL_Delay(10);
 
