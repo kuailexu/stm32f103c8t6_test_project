@@ -65,9 +65,13 @@ int main(void)
             {
                 ESP8266_ConnectMQTT(&esp8266);
             }
-            else if (esp8266.state == ESP8266_STATE_MQTT_CONNECTED)
+            else if (strstr((const char *)g_usart1_rx_buf, "PUB") != NULL)
             {
-                /* code */
+                ESP8266_PublishData(&esp8266, DATASTREAM_TEMP, 25.5);
+            }
+            else if (strstr((const char *)g_usart1_rx_buf, "SUB") != NULL)
+            {
+                ESP8266_SubscribeData(&esp8266);
             }
             else if (esp8266.state == ESP8266_STATE_READY)
             {
@@ -81,7 +85,12 @@ int main(void)
             uint16_t len = g_usart3_rx_len;  /* 得到此次接收到的数据长度 */
             if (len > 0)
             {
-                printf("\r\n收到串口3数据: %.*s\r\n", len, g_usart3_rx_buf);
+                if (strstr((const char *)g_usart3_rx_buf, "CLOSED") != NULL)
+                {
+                    printf("ESP8266连接已关闭，尝试重新连接MQTT...\r\n");
+                    ESP8266_ConnectMQTT(&esp8266);
+                }
+                printf("\r\n收到串口3数据: %.*s\r\n", len, (const char *)g_usart3_rx_buf);
             }
             usart3_restart_receive();                      /* 清除接收状态 */
         }

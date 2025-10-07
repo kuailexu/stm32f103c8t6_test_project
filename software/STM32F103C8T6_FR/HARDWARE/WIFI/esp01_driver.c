@@ -153,6 +153,40 @@ uint16_t Build_MQTT_Connect_Packet(char *buffer, const char *client_id,
 
     return ptr - (uint8_t *)buffer;
 }
+uint16_t Build_MQTT_PUB_Packet(char *buffer, const char *client_id, const char *message)
+{
+    uint8_t *ptr = (uint8_t *)buffer;
+
+    /* === 固定头 Fixed Header === */
+    // CONNECT报文类型 (0x10)
+    *ptr++ = 0x30;
+
+    // 剩余长度位置 (稍后回填)
+    uint8_t *remaining_len_ptr = ptr;
+    ptr++;
+
+    /* === 有效载荷 Payload === */
+    // 客户端ID Client Identifier
+    uint16_t client_id_len = strlen(client_id);
+    *ptr++ = (client_id_len >> 8) & 0xFF; // 长度高位
+    *ptr++ = client_id_len & 0xFF;        // 长度低位
+    memcpy(ptr, client_id, client_id_len);
+    ptr += client_id_len;
+    /* === 有效载荷 Payload === */
+    // 客户端ID Client Identifier
+    uint16_t message_len = strlen(message);
+    // *ptr++ = (message_len >> 8) & 0xFF; // 长度高位
+    // *ptr++ = message_len & 0xFF;        // 长度低位
+    memcpy(ptr, message, message_len);
+    ptr += message_len;
+
+
+    /* === 计算并回填剩余长度 === */
+    uint16_t remaining_len = (ptr - (uint8_t *)buffer) - 2; // 减去固定头的2字节
+    *remaining_len_ptr = remaining_len;
+
+    return ptr - (uint8_t *)buffer;
+}
 /**
  * @brief 连接MQTT服务器
  */
@@ -333,7 +367,8 @@ uint16_t Parse_IPD_Response(const char *response, char *mqtt_data)
 bool ESP8266_PublishData(ESP8266_Device_t *dev, const char *datastream, float value)
 {
     char cmd[128];
-    char mqtt_data[256];
+    char client_id[64];
+    char mqtt_pub_data[256];
 
     if (dev == NULL || datastream == NULL) return false;
 
@@ -345,23 +380,76 @@ bool ESP8266_PublishData(ESP8266_Device_t *dev, const char *datastream, float va
         }
         return false;
     }
-
+    char message[256];
     /* 构建MQTT发布报文 */
-    snprintf(mqtt_data, sizeof(mqtt_data),
+    snprintf(client_id, sizeof(client_id), "%s", MQTT_CLIENT_ID);
+    // snprintf(message, sizeof(message), "hello");
+    snprintf(message, sizeof(message),
         "{\"id\":123,\"version\":\"1.0\",\"params\":{\"%s\":{\"value\":%.2f}}}",
         datastream, value);
-
+    uint16_t packet_len = Build_MQTT_PUB_Packet(mqtt_pub_data, client_id, message);
+    if (dev->debug)
+    {
+        printf("MQTT PUB包长度: %d\r\n", packet_len);
+        printf("包内容(HEX): ");
+        for (int i = 0; i < packet_len; i++)
+        {
+            printf("%02X ", (uint8_t)mqtt_pub_data[i]);
+        }
+        printf("\r\n");
+    }
     /* 发送数据长度 */
-    snprintf(cmd, sizeof(cmd), "CIPSEND=%d", strlen(mqtt_data));
+    snprintf(cmd, sizeof(cmd), "AT+CIPSEND=%d", packet_len);
     if (!ESP8266_SendCommand(dev, cmd, ">", 3000))
     {
         return false;
     }
 
     /* 发送数据 */
-    HAL_UART_Transmit(dev->huart, (uint8_t *)mqtt_data, strlen(mqtt_data), 5000);
+    HAL_UART_Transmit(dev->huart, (uint8_t *)mqtt_pub_data, packet_len, 5000);
+    HAL_Delay(2000);
+    /* 等待连接响应 CONNACK (0x40) */
+    // CONNACK响应格式: 0x40 0x02 0x00 0x01 (成功)
+    char response[64];
+    uint32_t start_time = HAL_GetTick();
+    bool connack_received = false;
+    char mqtt_data[32];
+    while ((HAL_GetTick() - start_time) < 5000)
+    {
+        if (g_usart3_idle_flag)
+        {
+            if (dev->debug)
+            {
+                uint16_t len = g_usart3_rx_len;  /* 得到此次接收到的数据长度 */
+                if (len > 0)
+                {
+                    memcpy(response, g_usart3_rx_buf, len);
+                    uint16_t mqtt_len = Parse_IPD_Response(response, mqtt_data);
+                    printf("收到响应: ");
 
-    if (ESP8266_WaitForResponse(dev, "SEND OK", 3000))
+                    for (int i = 0; i < mqtt_len; i++)
+                    {
+                        printf("%02X ", (uint8_t)mqtt_data[i]);
+                    }
+                    printf("\r\n");
+                }
+                usart3_restart_receive();                      /* 清除接收状态 */
+                connack_received = true;
+                break;
+            }
+
+            // 检查CONNACK响应 (0x40 0x02 0x00 0x00)
+            // if ((uint8_t)mqtt_data[0] == 0x40 &&
+            //     (uint8_t)mqtt_data[1] == 0x02 &&
+            //     (uint8_t)mqtt_data[3] == 0x00) // 连接确认标志
+            // {
+            //     connack_received = true;
+            //     break;
+            // }
+        }
+    }
+
+    if (connack_received)
     {
         if (dev->debug)
         {
@@ -369,12 +457,20 @@ bool ESP8266_PublishData(ESP8266_Device_t *dev, const char *datastream, float va
         }
         return true;
     }
-
-    if (dev->debug)
+    else
     {
-        printf("数据发布失败\r\n");
+        if (dev->debug)
+        {
+            printf("数据发布失败，未收到响应\r\n");
+        }
+        return false;
     }
-    return false;
+
+    // if (dev->debug)
+    // {
+    //     printf("数据发布失败\r\n");
+    // }
+    // return false;
 }
 
 /**
